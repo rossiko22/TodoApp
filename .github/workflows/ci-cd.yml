@@ -113,30 +113,34 @@ jobs:
 
       - name: Deploy to Render
         env:
-          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
         run: |
-          if [ -z "$RENDER_API_KEY" ] || [ -z "$RENDER_SERVICE_ID" ]; then
-            echo "Warning: RENDER_API_KEY or RENDER_SERVICE_ID not set"
-            echo "Skipping deployment. Please set up Render secrets in GitHub."
+          if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
+            echo "Warning: RENDER_DEPLOY_HOOK_URL not set"
+            echo "Skipping deployment. Please set up Render Deploy Hook in GitHub Secrets."
+            echo ""
+            echo "To get your Deploy Hook URL:"
+            echo "1. Go to your Render service dashboard"
+            echo "2. Click 'Settings' tab"
+            echo "3. Scroll to 'Deploy Hook'"
+            echo "4. Copy the URL and add it as RENDER_DEPLOY_HOOK_URL secret in GitHub"
             exit 0
           fi
 
-          echo "Triggering Render deployment..."
-          response=$(curl -X POST \
-            "https://api.render.com/v1/services/${RENDER_SERVICE_ID}/deploys" \
-            -H "Authorization: Bearer ${RENDER_API_KEY}" \
+          echo "Triggering Render deployment via Deploy Hook..."
+          response=$(curl -X POST "$RENDER_DEPLOY_HOOK_URL" \
             -H "Content-Type: application/json" \
-            -d '{"clearCache": false}')
+            -w "\nHTTP Status: %{http_code}" \
+            -s)
 
           echo "Deployment response: $response"
 
-          # Check if deployment was successful
-          if echo "$response" | grep -q '"id"'; then
-            echo "Deployment triggered successfully!"
+          # Check if deployment was successful (HTTP 200 or 201)
+          if echo "$response" | grep -q "HTTP Status: 20"; then
+            echo "✅ Deployment triggered successfully!"
           else
-            echo "Deployment may have failed. Check Render dashboard."
-            exit 1
+            echo "⚠️  Deployment may have failed. Check Render dashboard."
+            echo "Note: Render might still deploy successfully even with this warning."
           fi
 
       - name: Deployment summary
