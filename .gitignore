@@ -50,3 +50,6 @@ ENV/
 .coverage
 htmlcov/
 .pytest_cache/
+
+#GUIDE
+DEPLOY.md
