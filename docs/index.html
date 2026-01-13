@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App - Projektna Dokumentacija</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 50px 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .section p {
+            font-size: 1.1em;
+            color: #555;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .team-members {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .team-member {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+        }
+
+        .team-member h3 {
+            color: #333;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .team-member p {
+            color: #777;
+            font-size: 0.95em;
+            text-align: center;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .feature {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .feature h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .feature p {
+            color: #666;
+            font-size: 0.95em;
+            text-align: left;
+        }
+
+        .badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 30px 40px;
+            text-align: center;
+            color: #777;
+            font-size: 0.9em;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .content {
+                padding: 30px 20px;
+            }
+
+            .team-members {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 Todo App</h1>
+            <p>Moderna aplikacija za upravljanje opravil</p>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <h2>O Projektu</h2>
+                <p>
+                    Todo App je moderna spletna aplikacija za upravljanje osebnih opravil,
+                    razvita kot del vaje za RIRS (Razvoj in integracija računalniških sistemov).
+                    Aplikacija omogoča uporabnikom enostavno dodajanje, urejanje, označevanje in
+                    brisanje opravil s preglednim in intuitivnim uporabniškim vmesnikom.
+                </p>
+                <p>
+                    Projekt je zgrajen z uporabo sodobnih tehnologij in najboljših praks CI/CD
+                    (Continuous Integration/Continuous Deployment), kar zagotavlja avtomatizirano
+                    testiranje, gradnjo in uvajanje aplikacije.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>Člani Ekipe</h2>
+                <div class="team-members">
+                    <div class="team-member">
+                        <h3>Član 1</h3>
+                        <p>Razvijalec / DevOps</p>
+                    </div>
+                    <div class="team-member">
+                        <h3>Član 2</h3>
+                        <p>Frontend Razvijalec</p>
+                    </div>
+                    <div class="team-member">
+                        <h3>Član 3</h3>
+                        <p>Backend Razvijalec</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Funkcionalnosti</h2>
+                <div class="features">
+                    <div class="feature">
+                        <h3>📋 Upravljanje Opravil</h3>
+                        <p>Dodajanje, urejanje in brisanje opravil z enostavnim vmesnikom</p>
+                    </div>
+                    <div class="feature">
+                        <h3>✅ Označevanje</h3>
+                        <p>Spremljanje opravljenih nalog z vizualnimi oznakami</p>
+                    </div>
+                    <div class="feature">
+                        <h3>📊 Statistika</h3>
+                        <p>Pregled števila aktivnih in opravljenih nalog</p>
+                    </div>
+                    <div class="feature">
+                        <h3>💾 Persistenca</h3>
+                        <p>Podatkovna baza PostgreSQL za trajno shranjevanje</p>
+                    </div>
+                    <div class="feature">
+                        <h3>🐳 Docker</h3>
+                        <p>Kontejnerizirana aplikacija za enostavno uvajanje</p>
+                    </div>
+                    <div class="feature">
+                        <h3>🔄 CI/CD</h3>
+                        <p>Avtomatizirana gradnja, testiranje in uvajanje</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Tehnologije</h2>
+                <div class="badges">
+                    <span class="badge">Python 3.11</span>
+                    <span class="badge">Flask</span>
+                    <span class="badge">PostgreSQL</span>
+                    <span class="badge">Docker</span>
+                    <span class="badge">GitHub Actions</span>
+                    <span class="badge">GitHub Pages</span>
+                    <span class="badge">Docker Hub</span>
+                    <span class="badge">HTML5/CSS3/JavaScript</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>CI/CD Pipeline</h2>
+                <p>
+                    Projekt uporablja GitHub Actions za avtomatizirano gradnjo in uvajanje:
+                </p>
+                <div class="features">
+                    <div class="feature">
+                        <h3>🔨 Build</h3>
+                        <p>Avtomatizirana gradnja aplikacije in preverjanje sintakse</p>
+                    </div>
+                    <div class="feature">
+                        <h3>🐳 Docker Build</h3>
+                        <p>Gradnja Docker slik s tagoma dev in prod</p>
+                    </div>
+                    <div class="feature">
+                        <h3>🧪 Development</h3>
+                        <p>Testno okolje za main vejo (Docker Hub: dev tag)</p>
+                    </div>
+                    <div class="feature">
+                        <h3>🚀 Production</h3>
+                        <p>Produkcijsko okolje z ročno odobritvijo (Docker Hub: prod tag)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>
+                <strong>Todo App</strong> - RIRS Projekt 2026 |
+                <a href="https://github.com" target="_blank">GitHub Repository</a>
+            </p>
+            <p style="margin-top: 10px;">
+                Uvajanje s CI/CD in Docker Hub integracijo
+            </p>
+        </div>
+    </div>
+</body>
+</html>
