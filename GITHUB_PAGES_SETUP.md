@@ -32,11 +32,12 @@ Implementiral sem vse zahteve naloge:
 
 1. Pojdite na **Settings** vašega GitHub repozitorija
 2. V levem meniju izberite **Pages**
-3. Pri **Source** nastavite:
-   - Source: `Deploy from a branch`
-   - Branch: `main` (ali `master`)
-   - Folder: `/docs`
-4. Kliknite **Save**
+3. Pri **Build and deployment** nastavite:
+   - **Source**: `GitHub Actions` ⬅️ **POMEMBNO!**
+   - (NE izbirajte "Deploy from a branch")
+4. Počakajte nekaj sekund, da se nastavi
+
+**OPOMBA:** Uporabljamo GitHub Actions workflow za deployment, zato mora biti source nastavljen na "GitHub Actions", ne "Deploy from a branch". Workflow sam poskrbi za deployment iz `/docs` folderja.
 
 GitHub Pages bo dostopen na: `https://[username].github.io/[repository-name]/`
 
@@ -196,9 +197,18 @@ Zamenjajte "Član 1", "Član 2", "Član 3" z dejanskimi imeni članov vaše ekip
 
 ## 🔍 Troubleshooting
 
+### Deployment stuck v "deployment_queued" statusu
+- **Simptom**: GitHub Actions deployment job ostane v "deployment_queued" in ne napreduje
+- **Razlog**: GitHub Pages source ni pravilno nastavljen
+- **Rešitev**:
+  1. Settings → Pages
+  2. Source: `GitHub Actions` (NE "Deploy from a branch")
+  3. Cancel trenutni workflow in ga ponovno poženite
+- **Podrobnosti**: Glej `PAGES_DEPLOYMENT_FIX.md`
+
 ### GitHub Pages ne deluje
 - Preverite, da je Pages omogočen v Settings → Pages
-- Preverite, da je izbran `/docs` folder
+- Preverite, da je Source nastavljen na `GitHub Actions`
 - Počakajte 1-2 minuti po prvem deployment-u
 
 ### Jekyll error pri GitHub Pages deployment
