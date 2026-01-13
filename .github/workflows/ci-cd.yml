@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ main, master, production ]
 
+# Allow only one concurrent deployment per branch
+concurrency:
+  group: "pages-${{ github.ref }}"
+  cancel-in-progress: true
+
 env:
   DOCKER_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/todo-app
 
@@ -80,6 +85,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Verify docs directory
+        run: |
+          echo "Checking docs directory contents:"
+          ls -la docs/
+          echo ""
+          echo "Contents of docs/index.html (first 10 lines):"
+          head -n 10 docs/index.html
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
@@ -91,6 +104,17 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Deployment complete
+        run: |
+          echo "## GitHub Pages Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: ✅ Deployed successfully" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL**: ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Visit your site at: ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
 
   # Job 3: Deploy to Development Environment (Docker Hub - dev tag)
   deploy-development:
