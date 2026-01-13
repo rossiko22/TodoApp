@@ -12,6 +12,7 @@ Implementiral sem vse zahteve naloge:
   - Kratek opis projekta s funkcionalnostmi
   - Pregled tehnologij in CI/CD pipeline-a
 - **Deployment**: Avtomatski deployment prek GitHub Actions pri push na `main` vejo
+- **Opomba**: Datoteka `docs/.nojekyll` onemogočila Jekyll processing (GitHub Pages privzeto uporablja Jekyll)
 
 ### ✅ 2. Environments (70%)
 
@@ -199,6 +200,12 @@ Zamenjajte "Član 1", "Član 2", "Član 3" z dejanskimi imeni članov vaše ekip
 - Preverite, da je Pages omogočen v Settings → Pages
 - Preverite, da je izbran `/docs` folder
 - Počakajte 1-2 minuti po prvem deployment-u
+
+### Jekyll error pri GitHub Pages deployment
+- **Napaka**: `No such file or directory @ dir_chdir0 - /github/workspace/docs`
+- **Razlog**: GitHub Pages privzeto uporablja Jekyll za build statičnih strani
+- **Rešitev**: Datoteka `docs/.nojekyll` preprečuje Jekyll processing
+- **Preverite**: Ali obstaja datoteka `docs/.nojekyll` (prazna datoteka)
 
 ### Docker Hub push ne deluje
 - Preverite GitHub Secrets (`DOCKER_USERNAME`, `DOCKER_PASSWORD`)
