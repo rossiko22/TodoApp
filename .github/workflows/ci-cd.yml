@@ -64,7 +64,76 @@ jobs:
           path: build/
           retention-days: 7
 
-  # Job 2: SonarCloud Analysis
+  # Job 2: GitHub Code Scanning (CodeQL)
+  code-scanning:
+    name: Code Scanning (CodeQL)
+    runs-on: ubuntu-latest
+    needs: build
+
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: python, javascript
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:python,javascript"
+
+      - name: Code Scanning Summary
+        run: |
+          echo "## Code Scanning (CodeQL)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Languages**: Python, JavaScript" >> $GITHUB_STEP_SUMMARY
+          echo "- **View Results**: [Security Tab](https://github.com/${{ github.repository }}/security/code-scanning)" >> $GITHUB_STEP_SUMMARY
+
+  # Job 3: Snyk Container Security Scan
+  snyk-container:
+    name: Snyk Container Scan
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image for scanning
+        run: docker build -t todo-app:test .
+
+      - name: Run Snyk to check Docker image
+        uses: snyk/actions/docker@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: todo-app:test
+          args: --file=Dockerfile --severity-threshold=high
+
+      - name: Upload Snyk report
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: snyk.sarif
+        continue-on-error: true
+
+      - name: Snyk Summary
+        run: |
+          echo "## Snyk Container Scan" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image**: todo-app:test" >> $GITHUB_STEP_SUMMARY
+          echo "- **Dockerfile**: Analyzed" >> $GITHUB_STEP_SUMMARY
+          echo "- **View Results**: [Snyk Dashboard](https://app.snyk.io)" >> $GITHUB_STEP_SUMMARY
+
+  # Job 4: SonarCloud Analysis
   sonarcloud:
     name: SonarCloud Analysis
     runs-on: ubuntu-latest
@@ -339,3 +408,54 @@ jobs:
           echo "- **Docker Image**: ${{ env.DOCKER_IMAGE_NAME }}:latest" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Check your Render dashboard for deployment status." >> $GITHUB_STEP_SUMMARY
+
+  # Job: Datadog CI Visibility
+  datadog-ci:
+    name: Datadog CI Metrics
+    runs-on: ubuntu-latest
+    needs: [build, code-scanning, snyk-container, sonarcloud]
+    if: always()
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Send CI metrics to Datadog
+        env:
+          DD_API_KEY: ${{ secrets.DD_API_KEY }}
+        run: |
+          if [ -z "$DD_API_KEY" ]; then
+            echo "DD_API_KEY not set, skipping Datadog metrics"
+            exit 0
+          fi
+
+          # Calculate pipeline duration
+          PIPELINE_END=$(date +%s)
+
+          # Send custom metrics to Datadog
+          curl -X POST "https://api.datadoghq.com/api/v2/series" \
+            -H "Content-Type: application/json" \
+            -H "DD-API-KEY: ${DD_API_KEY}" \
+            -d @- << EOF
+          {
+            "series": [{
+              "metric": "ci.pipeline.completed",
+              "type": 1,
+              "points": [{
+                "timestamp": ${PIPELINE_END},
+                "value": 1
+              }],
+              "tags": [
+                "repository:${{ github.repository }}",
+                "branch:${{ github.ref_name }}",
+                "workflow:${{ github.workflow }}",
+                "status:${{ job.status }}"
+              ]
+            }]
+          }
+          EOF
+
+          echo "## Datadog CI Metrics" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: Metrics sent to Datadog" >> $GITHUB_STEP_SUMMARY
+          echo "- **Dashboard**: [View in Datadog](https://app.datadoghq.com)" >> $GITHUB_STEP_SUMMARY
