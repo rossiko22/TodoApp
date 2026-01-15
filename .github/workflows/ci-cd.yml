@@ -90,11 +90,12 @@ jobs:
           echo "- **Dashboard**: [View on SonarCloud](https://sonarcloud.io/project/overview?id=rossiko22_TodoApp)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-  # Job 3: Quality Gate Check
+  # Job 3: Quality Gate Check (only for production)
   quality-gate:
     name: Quality Gate Check
     runs-on: ubuntu-latest
     needs: sonarcloud
+    if: github.event_name == 'push' && github.ref == 'refs/heads/production'
 
     steps:
       - name: Check Quality Gate
