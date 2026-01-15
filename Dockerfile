@@ -4,11 +4,12 @@ FROM python:3.11-slim
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
+# Install system dependencies (--no-install-recommends for security)
+RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     postgresql-client \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
 # Copy requirements first for better caching
 COPY requirements.txt .
