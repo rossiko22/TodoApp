@@ -68,7 +68,7 @@ async function toggleTodo(id) {
         todos[index] = updatedTodo;
         renderTodos();
     } catch (error) {
-        console.error('Error toggling todo mode:', error);
+        console.error('Error toggling todo:', error);
         showError('Failed to update todo. Please try again.');
     }
 }
