@@ -64,7 +64,67 @@ jobs:
           path: build/
           retention-days: 7
 
-  # Job 2: GitHub Pages Deployment
+  # Job 2: SonarCloud Analysis
+  sonarcloud:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for better analysis
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: SonarCloud Analysis Summary
+        run: |
+          echo "## SonarCloud Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Project**: rossiko22_TodoApp" >> $GITHUB_STEP_SUMMARY
+          echo "- **Dashboard**: [View on SonarCloud](https://sonarcloud.io/project/overview?id=rossiko22_TodoApp)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+  # Job 3: Quality Gate Check
+  quality-gate:
+    name: Quality Gate Check
+    runs-on: ubuntu-latest
+    needs: sonarcloud
+
+    steps:
+      - name: Check Quality Gate
+        id: quality-gate
+        run: |
+          echo "Waiting for SonarCloud analysis to complete..."
+          sleep 10
+
+          # Check quality gate status via SonarCloud API
+          QUALITY_GATE_STATUS=$(curl -s -u ${{ secrets.SONAR_TOKEN }}: \
+            "https://sonarcloud.io/api/qualitygates/project_status?projectKey=rossiko22_TodoApp" \
+            | jq -r '.projectStatus.status')
+
+          echo "Quality Gate Status: $QUALITY_GATE_STATUS"
+          echo "status=$QUALITY_GATE_STATUS" >> $GITHUB_OUTPUT
+
+          if [ "$QUALITY_GATE_STATUS" != "OK" ] && [ "$QUALITY_GATE_STATUS" != "NONE" ]; then
+            echo "## Quality Gate Failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Quality Gate Status: **$QUALITY_GATE_STATUS**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Please fix the issues in [SonarCloud](https://sonarcloud.io/project/overview?id=rossiko22_TodoApp)" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+          echo "## Quality Gate Passed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Quality Gate Status: **$QUALITY_GATE_STATUS**" >> $GITHUB_STEP_SUMMARY
+
+  # Job 4: GitHub Pages Deployment
   deploy-pages:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
@@ -172,7 +232,7 @@ jobs:
   deploy-production:
     name: Deploy to Production
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build, quality-gate]
     if: github.event_name == 'push' && github.ref == 'refs/heads/production'
 
     environment:
